@@ -3,6 +3,16 @@
 
 const API_BASE = (import.meta.env.VITE_API_BASE ?? "http://localhost:8000").replace(/\/$/, "");
 
+async function apiFetch(url, options = {}) {
+  return fetch(url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      "ngrok-skip-browser-warning": "true",
+    },
+  });
+}
+
 async function unwrap(res) {
   if (!res.ok) {
     let detail = `HTTP ${res.status}`;
@@ -18,13 +28,13 @@ async function unwrap(res) {
 }
 
 export async function getVoices() {
-  const res = await unwrap(await fetch(`${API_BASE}/voices`));
+  const res = await unwrap(await apiFetch(`${API_BASE}/voices`));
   return res.json();
 }
 
 export async function synthesize({ text, voiceId, language }) {
   const res = await unwrap(
-    await fetch(`${API_BASE}/synthesize`, {
+    await apiFetch(`${API_BASE}/synthesize`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, voice_id: voiceId, language }),
@@ -36,7 +46,14 @@ export async function synthesize({ text, voiceId, language }) {
 export async function transcribe(file) {
   const form = new FormData();
   form.append("file", file, file.name || "recording.webm");
-  const res = await unwrap(await fetch(`${API_BASE}/transcribe`, { method: "POST", body: form }));
+
+  const res = await unwrap(
+    await apiFetch(`${API_BASE}/transcribe`, {
+      method: "POST",
+      body: form,
+    })
+  );
+
   const data = await res.json();
   return data.text;
 }
@@ -46,23 +63,36 @@ export async function cloneVoice({ name, displayName, file }) {
   form.append("name", name);
   form.append("display_name", displayName || name);
   form.append("file", file);
-  const res = await unwrap(await fetch(`${API_BASE}/clone-voice`, { method: "POST", body: form }));
+
+  const res = await unwrap(
+    await apiFetch(`${API_BASE}/clone-voice`, {
+      method: "POST",
+      body: form,
+    })
+  );
+
   return res.json();
 }
 
 export async function deleteVoice(voiceId) {
-  const res = await unwrap(await fetch(`${API_BASE}/voices/${voiceId}`, { method: "DELETE" }));
+  const res = await unwrap(
+    await apiFetch(`${API_BASE}/voices/${voiceId}`, {
+      method: "DELETE",
+    })
+  );
+
   return res.json();
 }
 
 export async function updateVoice(voiceId, displayName) {
   const res = await unwrap(
-    await fetch(`${API_BASE}/voices/${voiceId}`, {
+    await apiFetch(`${API_BASE}/voices/${voiceId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ display_name: displayName }),
     })
   );
+
   return res.json();
 }
 
@@ -80,7 +110,7 @@ export async function updateVoice(voiceId, displayName) {
  * Supports abort via AbortController — pass signal to cancel mid-stream.
  */
 export async function chatStream({ message, history, voiceId, language, industry }, signal) {
-  const res = await fetch(`${API_BASE}/chat-stream`, {
+  const res = await apiFetch(`${API_BASE}/chat-stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -98,7 +128,9 @@ export async function chatStream({ message, history, voiceId, language, industry
     try {
       const body = await res.json();
       detail = typeof body.detail === "string" ? body.detail : JSON.stringify(body);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     throw new Error(detail);
   }
 
@@ -110,13 +142,18 @@ export async function chatStream({ message, history, voiceId, language, industry
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
+
       buffer += decoder.decode(value, { stream: true });
+
       const lines = buffer.split("\n");
+
       // Keep the last (potentially incomplete) line in the buffer
       buffer = lines.pop();
+
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
+
         try {
           yield JSON.parse(trimmed);
         } catch {
@@ -124,10 +161,16 @@ export async function chatStream({ message, history, voiceId, language, industry
         }
       }
     }
+
     // Flush remaining buffer
     const remaining = buffer.trim();
+
     if (remaining) {
-      try { yield JSON.parse(remaining); } catch { /* ignore */ }
+      try {
+        yield JSON.parse(remaining);
+      } catch {
+        /* ignore */
+      }
     }
   }
 
