@@ -1,0 +1,42 @@
+# ── NORBEAI ───────────────────────────────────────────────────
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+*.egg
+
+# Node
+node_modules/
+dist/
+build/
+*.local
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Models & caches (downloaded at runtime, do not commit)
+~/.cache/
+~/.local/share/
+.coqui/
+backend/models/
+
+# Runtime data — voice profiles and downloaded reference audio
+backend/voices/
+backend/faq_audio/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Runtime/debug files
+backend/backend_log.txt
+backend/backend_crash.txt

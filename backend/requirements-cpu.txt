@@ -1,0 +1,5 @@
+# CPU-only PyTorch — install BEFORE requirements.txt
+#   pip install -r requirements-cpu.txt
+--index-url https://download.pytorch.org/whl/cpu
+torch==2.7.1
+torchaudio==2.7.1

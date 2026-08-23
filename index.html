@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Voice Receptionist for Appointment Booking and Call Automation — FrontDesk AI</title>
+<meta name="description" content="Replace missed calls with an AI front desk that answers in an Indian voice, books appointments, and takes messages 24/7. Hear it live." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --background: #ffffff;
+    --foreground: #090b0c;
+    --primary: #2563eb;
+    --primary-foreground: #eff6ff;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #18181b;
+    --muted: #f1f3f3;
+    --muted-foreground: #67787c;
+    --card: #ffffff;
+    --card-foreground: #090b0c;
+    --border: #e3e7e8;
+    --ring: #9ca8ab;
+    --blue-200: #bedbff;
+    --blue-300: #90c5ff;
+    --blue-600: #155dfc;
+    --blue-800: #193cb8;
+    --teal-200: #96f7e4;
+    --teal-600: #009588;
+    --yellow-200: #fff085;
+    --yellow-600: #cd8900;
+    --destructive: #e40014;
+    --font-sans: "Inter", Arial, sans-serif;
+    --font-serif: "Playfair Display", Georgia, serif;
+    --font-mono: "Geist Mono", ui-monospace, "Cascadia Mono", monospace;
+    --radius: 1.625rem;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    position: relative;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+
+  .eyebrow, .mono {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .eyebrow { color: var(--primary); }
+
+  h1, h2, h3, .serif { font-family: var(--font-serif); font-weight: 400; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+  .btn-primary:hover { background: rgba(37,99,235,.82); }
+  .btn-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+  .btn-secondary:hover { background: rgba(244,244,245,.82); }
+  .btn-lg { height: 3rem; padding: 0 1.4rem; font-size: 1.05rem; }
+  .btn-sm { height: 2.75rem; padding: 0 1.1rem; font-size: 0.9rem; }
+  .btn-full { width: 100%; height: 2.75rem; font-size: 0.9rem; }
+  .btn .arrow { transition: margin-left .2s var(--ease); }
+  .btn:hover .arrow { margin-left: 0.25rem; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 80rem; margin: 0 auto; padding: 0 1.5rem;
+    height: 4rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+  .brand .mark {
+    width: 1.7rem; height: 1.7rem; border-radius: 0.6rem;
+    background: var(--primary); color: #fff; display: grid; place-items: center;
+  }
+  .brand .mark svg { width: 1rem; height: 1rem; }
+  .nav-links { display: flex; gap: 1.75rem; font-size: 0.9rem; color: var(--muted-foreground); }
+  .nav-links a:hover { color: var(--foreground); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 5rem 1.5rem 9rem;
+    overflow: hidden;
+    background: var(--background);
+    isolation: isolate;
+  }
+  .hero-inner { max-width: 56rem; z-index: 1; }
+  .hero h1 {
+    margin-top: 1.5rem;
+    font-size: clamp(3rem, 8vw, 6.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .hl { position: relative; white-space: nowrap; }
+  .hl svg {
+    position: absolute; left: 0; right: 0; bottom: -0.28em;
+    width: 100%; height: 0.22em;
+  }
+  .hero-sub {
+    margin-top: 1.5rem;
+    font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+    color: var(--muted-foreground);
+    max-width: 34rem; margin-left: auto; margin-right: auto;
+  }
+  .hero-actions { margin-top: 2.5rem; display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+  .bars {
+    position: absolute; inset: 0; z-index: 0;
+    display: flex; align-items: flex-end;
+    margin-top: auto;
+    pointer-events: none;
+  }
+  .bars i {
+    flex: 1;
+    background: linear-gradient(to top, #2563eb, #3b82f6, transparent);
+    height: 100%;
+    opacity: 0.10;
+  }
+
+  /* ---------- Content band ---------- */
+  .band {
+    background: linear-gradient(to bottom, rgba(37,99,235,0.10), var(--primary-foreground) 15%, #ffffff 60%);
+  }
+
+  /* ---------- Section scaffolding ---------- */
+  section { padding: 5rem 1.5rem; }
+  .sec {
+    max-width: 80rem; margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .sec-head { text-align: center; max-width: 48rem; }
+  .sec-head h2 { margin-top: 1.25rem; font-size: clamp(2rem, 4.5vw, 3.4rem); line-height: 1.2; text-wrap: balance; }
+  .sec-head p { margin-top: 1.1rem; font-size: 1.1rem; color: var(--muted-foreground); max-width: 40rem; margin-left: auto; margin-right: auto; }
+
+  /* ---------- Demo cards (Experience it in action) ---------- */
+  .demo-grid { margin-top: 3rem; width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 60rem; }
+  @media (max-width: 900px) { .demo-grid { grid-template-columns: 1fr; } }
+  .demo-card {
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    color: var(--primary-foreground);
+    position: relative;
+    overflow: hidden;
+  }
+  .demo-card .big-icon { width: 3.5rem; height: 3.5rem; color: var(--icon-tint); }
+  .demo-card h3 { font-size: clamp(1.6rem, 2.5vw, 2.1rem); color: var(--primary-foreground); margin-top: 1rem; }
+  .demo-card p { font-size: 0.95rem; color: rgba(255,255,255,0.85); margin-top: 0.25rem; }
+  .demo-card.teal  { background: var(--teal-600);  box-shadow: inset 0 -32px 65px 0 var(--teal-200);  --icon-tint: var(--teal-200); }
+  .demo-card.blue  { background: var(--primary);   box-shadow: inset 0 -32px 65px 0 var(--blue-200);   --icon-tint: var(--blue-200); }
+  .demo-card.yellow{ background: var(--yellow-600); box-shadow: inset 0 -32px 65px 0 var(--yellow-200); --icon-tint: var(--yellow-200); }
+  .start-btn {
+    align-self: flex-start;
+    background: var(--icon-tint);
+    color: var(--foreground);
+    border: none;
+    border-radius: 999px;
+    padding: 0.55rem 1.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 3px rgba(0,0,0,0.12);
+    transition: transform .2s var(--ease), box-shadow .2s var(--ease);
+  }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 8px rgba(0,0,0,0.18); }
+
+  /* ---------- Live demo panel ---------- */
+  .demo-panel {
+    margin-top: 3rem;
+    width: 100%;
+    max-width: 46rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2.5rem;
+    padding: 2.75rem 2.25rem 2.25rem;
+    box-shadow: 0 25px 60px -20px rgba(9,11,12,0.18);
+    text-align: center;
+  }
+  .orb-wrap { position: relative; width: 8.5rem; height: 8.5rem; margin: 0 auto 1.4rem; }
+  .orb {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #3b82f6, var(--primary) 48%, #1447e6 100%);
+    box-shadow: 0 14px 40px -6px rgba(37,99,235,0.55);
+    display: grid; place-items: center;
+    color: #fff;
+    transition: transform .3s var(--ease);
+  }
+  .orb svg { width: 3.4rem; height: 3.4rem; }
+  .orb.listening { animation: breathe 1.1s ease-in-out infinite; }
+  .orb.speaking { animation: speak 0.9s ease-in-out infinite; }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); box-shadow: 0 14px 40px -6px rgba(37,99,235,0.5); }
+    50% { transform: scale(1.1); box-shadow: 0 14px 60px -6px rgba(59,130,246,0.75); }
+  }
+  @keyframes speak {
+    0%, 100% { transform: scale(1.05); box-shadow: 0 14px 50px -6px rgba(37,99,235,0.6); }
+    50% { transform: scale(0.92); box-shadow: 0 10px 30px -6px rgba(37,99,235,0.45); }
+  }
+  .status { font-size: 0.95rem; color: var(--muted-foreground); min-height: 1.4rem; margin-bottom: 1rem; }
+  .status b { color: var(--foreground); font-family: var(--font-mono); }
+
+  .chatbox {
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 1.1rem;
+    padding: 1rem 1.15rem;
+    min-height: 4.2rem;
+    max-height: 9rem;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  .chatbox .ai b { color: var(--primary); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.04em; }
+  .chatbox .you b { color: var(--foreground); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.04em; }
+  .chatbox div + div { margin-top: 0.6rem; }
+
+  .demo-controls { display: flex; justify-content: center; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+  .mic-btn {
+    width: 3.5rem; height: 3.5rem; border-radius: 50%;
+    border: none; cursor: pointer;
+    background: var(--primary); color: #fff;
+    display: grid; place-items: center;
+    transition: transform .15s, background .2s, box-shadow .2s;
+    box-shadow: 0 10px 24px -8px rgba(37,99,235,0.6);
+  }
+  .mic-btn:hover { transform: translateY(-2px); }
+  .mic-btn.active { background: var(--destructive); box-shadow: 0 0 0 6px rgba(228,0,20,0.15); animation: breathe 1.1s infinite; }
+  .mic-btn svg { width: 1.5rem; height: 1.5rem; }
+
+  .chips { display: flex; gap: 0.55rem; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    transition: all .15s var(--ease);
+  }
+  .chip:hover { color: var(--foreground); background: var(--muted); }
+
+  .panel-row {
+    display: flex; gap: 0.75rem; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+    font-size: 0.85rem; color: var(--muted-foreground);
+  }
+  .panel-row select, .panel-row input[type="password"] {
+    background: var(--card);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: 0.7rem;
+    padding: 0.5rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    outline: none;
+  }
+  .panel-row input[type="password"] { width: 220px; }
+  .panel-row select:focus, .panel-row input[type="password"]:focus { border-color: var(--primary); }
+  .panel-note { margin-top: 1.25rem; font-size: 0.8rem; color: var(--muted-foreground); }
+  .panel-note b { color: var(--primary); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; }
+
+  /* ---------- Problem stats ---------- */
+  .stats { margin-top: 3rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; max-width: 64rem; width: 100%; }
+  @media (max-width: 900px) { .stats { grid-template-columns: 1fr; } }
+  .stat-wrap { position: relative; display: flex; justify-content: center; }
+  .stat-plate {
+    position: absolute; inset: 0; transform: scaleX(0.95) rotate(-5deg);
+    border-radius: 0.875rem;
+    background: rgba(37,99,235,0.9);
+    z-index: 0;
+  }
+  .stat-card {
+    position: relative; z-index: 1;
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    max-width: 20rem;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.15);
+    backdrop-filter: blur(12px);
+  }
+  .stat-card .mono { color: var(--primary); font-size: 0.8rem; }
+  .stat-card h3 { font-size: 3rem; font-weight: 700; margin: 0.6rem 0; }
+  .stat-card p { color: var(--muted-foreground); font-size: 0.95rem; }
+
+  /* ---------- Product band ---------- */
+  .product { text-align: center; }
+  .product h2 { font-size: clamp(3rem, 8vw, 5.5rem); margin-top: 1rem; letter-spacing: -0.01em; }
+  .product p { margin-top: 1rem; color: var(--muted-foreground); font-size: 1.15rem; }
+
+  /* ---------- Steps ---------- */
+  .steps { margin-top: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 56rem; width: 100%; }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1.375rem;
+    padding: 2rem;
+    display: flex; flex-direction: column; gap: 0.9rem;
+  }
+  .step .icon {
+    width: 3rem; height: 3rem; border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    display: grid; place-items: center;
+    color: var(--primary);
+  }
+  .step .icon svg { width: 1.5rem; height: 1.5rem; }
+  .step .mono { color: var(--primary); font-size: 0.75rem; }
+  .step h3 { font-family: var(--font-sans); font-weight: 600; font-size: 1.25rem; }
+  .step p { color: var(--muted-foreground); font-size: 0.95rem; line-height: 1.6; }
+
+  /* ---------- Pricing ---------- */
+  .pricing { margin-top: 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 56rem; width: 100%; align-items: stretch; }
+  @media (max-width: 760px) { .pricing { grid-template-columns: 1fr; } }
+  .price-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1.125rem;
+    padding: 1.75rem;
+    display: flex; flex-direction: column; gap: 1.1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .price-card.featured {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    box-shadow: inset 0 -10px 65px 0 var(--blue-200), 0 20px 40px -18px rgba(25,60,184,0.3);
+  }
+  .price-card .mono { color: var(--primary); font-size: 0.8rem; }
+  .price-card.featured .mono { color: var(--primary-foreground); }
+  .price-card .amount {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    display: flex; align-items: baseline; gap: 0.4rem;
+  }
+  .price-card .amount small { font-weight: 300; font-size: 0.85rem; letter-spacing: 0.14em; }
+  .price-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .price-card li { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.95rem; }
+  .dot { width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--primary); margin-top: 0.5rem; flex-shrink: 0; }
+  .price-card.featured .dot { background: var(--primary-foreground); }
+  .price-card .btn { margin-top: auto; }
+  .price-card.featured .btn-secondary { color: var(--primary); }
+
+  /* ---------- CTA ---------- */
+  .cta-panel {
+    border-radius: 2.5rem;
+    background: radial-gradient(10240px at 0% 0%, var(--blue-800) 0%, var(--primary) 100%);
+    background-size: 100% 100%;
+    color: var(--primary-foreground);
+    text-align: center;
+    padding: 4rem 2rem;
+    box-shadow: inset 0 -20px 65px 0 var(--blue-300), 0 20px 50px -20px rgba(25,60,184,0.5);
+    max-width: 64rem;
+    width: 100%;
+  }
+  .cta-panel h2 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.15; text-wrap: balance; }
+  .cta-panel p { margin: 1.1rem auto 2rem; max-width: 36rem; color: rgba(255,255,255,0.85); font-size: 1.05rem; }
+
+  /* ---------- Footer ---------- */
+  footer { border-top: 1px solid var(--border); padding: 2rem 1.5rem; }
+  .foot {
+    max-width: 80rem; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    color: var(--muted-foreground); font-size: 0.85rem;
+  }
+  .foot a { color: var(--muted-foreground); }
+  .foot a:hover { color: var(--foreground); }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(90px);
+    background: var(--foreground); color: #fff;
+    border-radius: 999px;
+    padding: 0.8rem 1.4rem;
+    font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.02em;
+    opacity: 0; pointer-events: none;
+    transition: all .3s var(--ease); z-index: 100;
+    max-width: 92vw; text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.error { background: var(--destructive); }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="mark">
+        <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="56" y="32" width="144" height="144" rx="32"/>
+          <path d="M128 176v32"/>
+          <path d="M88 232h80"/>
+        </svg>
+      </span>
+      FrontDesk AI
+    </a>
+    <div class="nav-links">
+      <a href="#action">Live demo</a>
+      <a href="#problem">The problem</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="#action">Book a demo</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <p class="eyebrow">AI Voice Receptionist for Appointment Booking and Call Automation</p>
+    <h1>Your front desk, on <span class="hl">autopilot.
+      <svg viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M6 14 C 70 4, 190 2, 294 12" fill="none" stroke="#2563eb" stroke-width="9" stroke-linecap="round" opacity="0.4"/>
+      </svg>
+    </span></h1>
+    <p class="hero-sub">Replace missed calls with an AI that handles everything professionally — in an Indian voice.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="#action">Book a demo <span class="arrow">&#8594;</span></a>
+      <button class="btn btn-secondary btn-lg" onclick="startListening()">Try the live voice</button>
+    </div>
+  </div>
+  <div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</header>
+
+<!-- Content band -->
+<main class="band">
+
+  <!-- Experience it in action -->
+  <section id="action">
+    <div class="sec">
+      <div class="sec-head">
+        <p class="eyebrow">Experience it in action</p>
+        <h2>Talk to your AI front desk</h2>
+        <p>Every reply is spoken by Sarvam AI in an Indian voice. Tap a card or use the mic below.</p>
+      </div>
+
+      <div class="demo-grid">
+        <div class="demo-card teal">
+          <svg class="big-icon" viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M128,60v136"/><path d="M60,128h136"/>
+          </svg>
+          <div>
+            <h3>Hospitals</h3>
+            <p>Book appointments, verify insurance, answer timing questions.</p>
+          </div>
+          <button class="start-btn" onclick="startListening()">Start Speaking</button>
+        </div>
+        <div class="demo-card blue">
+          <svg class="big-icon" viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M96,224V88a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8V224"/>
+            <path d="M40,224H216"/>
+            <path d="M112,120h8M136,120h8M112,152h8M136,152h8M112,184h8M136,184h8"/>
+          </svg>
+          <div>
+            <h3>Enterprises</h3>
+            <p>Route callers, take messages, and never put anyone on hold.</p>
+          </div>
+          <button class="start-btn" onclick="startListening()">Start Speaking</button>
+        </div>
+        <div class="demo-card yellow">
+          <svg class="big-icon" viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M56,104v88a8,8,0,0,0,8,8H192a8,8,0,0,0,8-8V104"/>
+            <path d="M40,64l14-28a8,8,0,0,1,7-4h134a8,8,0,0,1,7,4l14,28"/>
+            <path d="M168,216V160a8,8,0,0,0-8-8H96a8,8,0,0,0-8,8v56"/>
+            <path d="M40,64H216v24a16,16,0,0,1-16,16A16,16,0,0,1,184,104a16,16,0,0,1-16-16,16,16,0,0,1-16,16,16,16,0,0,1-16-16,16,16,0,0,1-16,16,16,16,0,0,1-16-16,16,16,0,0,1-16,16,16,16,0,0,1-16-16,16,16,0,0,1-16,16,16,16,0,0,1-16-16,16,16,0,0,1-16-16Z"/>
+          </svg>
+          <div>
+            <h3>Stores</h3>
+            <p>Answer stock, hours, and order queries after closing time.</p>
+          </div>
+          <button class="start-btn" onclick="startListening()">Start Speaking</button>
+        </div>
+      </div>
+
+      <!-- Live demo panel -->
+      <div class="demo-panel">
+        <div class="orb-wrap">
+          <div class="orb" id="orb">
+            <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="88" y="40" width="80" height="112" rx="32"/>
+              <path d="M192,128a64,64,0,0,1-128,0"/>
+              <line x1="128" y1="192" x2="128" y2="224"/>
+              <line x1="88" y1="224" x2="168" y2="224"/>
+            </svg>
+          </div>
+        </div>
+        <div class="status" id="status">Tap the mic and say something, or pick a suggestion below.</div>
+
+        <div class="chatbox" id="chatbox">
+          <span class="ai"><b>FrontDesk AI:</b></span> Hi! I'm your AI front desk. Ask me about hours, appointments, or pricing — I'll answer out loud.
+        </div>
+
+        <div class="demo-controls">
+          <button class="mic-btn" id="micBtn" onclick="toggleListening()" title="Press to talk" aria-label="Press to talk">
+            <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="88" y="40" width="80" height="112" rx="32"/>
+              <path d="M192,128a64,64,0,0,1-128,0"/>
+              <line x1="128" y1="192" x2="128" y2="224"/>
+              <line x1="88" y1="224" x2="168" y2="224"/>
+            </svg>
+          </button>
+          <button class="btn btn-secondary" onclick="repeatWelcome()">Hear greeting</button>
+        </div>
+
+        <div class="chips">
+          <button class="chip" onclick="ask('What are your business hours?')">What are your business hours?</button>
+          <button class="chip" onclick="ask('How do I book an appointment?')">Book an appointment</button>
+          <button class="chip" onclick="ask('Do you support multiple languages?')">Do you support multiple languages?</button>
+        </div>
+
+        <div class="panel-row">
+          <span>AI voice:</span>
+          <select id="speakerSelect" onchange="setSpeaker(this.value)"></select>
+          <button class="chip" onclick="toggleMute()" id="muteBtn">Mute speaker</button>
+        </div>
+        <div class="panel-row">
+          <span>API key:</span>
+          <input type="password" id="apiKeyInput" placeholder="Sarvam api-subscription-key" autocomplete="off" />
+          <button class="chip" onclick="saveApiKey()">Save key</button>
+          <button class="chip" onclick="clearApiKey()">Remove</button>
+        </div>
+
+        <p class="panel-note">Every reply is spoken by <b>Sarvam AI</b> (bulbul v3, Indian English). Enter your API key above — without it, the agent stays silent.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Problem -->
+  <section id="problem">
+    <div class="sec">
+      <div class="sec-head">
+        <p class="eyebrow">The problem</p>
+        <h2>Limited receptionist, unlimited calls.</h2>
+        <p>Too many calls, not enough people and no way to know what got missed.</p>
+      </div>
+      <div class="stats">
+        <div class="stat-wrap">
+          <div class="stat-plate"></div>
+          <div class="stat-card">
+            <p class="mono">Peak hour overload</p>
+            <h3>62%</h3>
+            <p>of calls to small businesses go unanswered during peak hours</p>
+          </div>
+        </div>
+        <div class="stat-wrap">
+          <div class="stat-plate"></div>
+          <div class="stat-card">
+            <p class="mono">After-hours silence</p>
+            <h3>67%</h3>
+            <p>of customers won't call back after one missed attempt</p>
+          </div>
+        </div>
+        <div class="stat-wrap">
+          <div class="stat-plate"></div>
+          <div class="stat-card">
+            <p class="mono">Repetition overload</p>
+            <h3>80%</h3>
+            <p>of customer interactions are repetitive and could be automated</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Product -->
+  <section class="product">
+    <div class="sec">
+      <p class="eyebrow">The product</p>
+      <h2>FrontDesk AI</h2>
+      <p>Voice agent personalized for your business.</p>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how">
+    <div class="sec">
+      <div class="sec-head">
+        <p class="eyebrow">How it works</p>
+        <h2>Live in days, not weeks.</h2>
+        <p>Most clinics go live within 3 to 5 days with measurable value from week one.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="icon">
+            <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="128" cy="104" r="40"/><path d="M64,216c8-28.5,35.4-48,64-48s56,19.5,64,48"/>
+            </svg>
+          </div>
+          <p class="mono">Step 1</p>
+          <h3>Signup</h3>
+          <p>We map your high-volume call intents, language mix, escalation policy, and current data setup.</p>
+        </div>
+        <div class="step">
+          <div class="icon">
+            <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M48,96H208a16,16,0,0,1,16,16V192a16,16,0,0,1-16,16H88l-56,32V112A16,16,0,0,1,48,96Z"/><path d="M96,80V72a32,32,0,0,1,64,0v8"/><line x1="104" y1="144" x2="152" y2="144"/>
+            </svg>
+          </div>
+          <p class="mono">Step 2</p>
+          <h3>Agent setup</h3>
+          <p>We configure greeting style, peak traffic hours, staff routing, and business-specific behavior.</p>
+        </div>
+        <div class="step">
+          <div class="icon">
+            <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M128,152a24,24,0,0,1-36,36L64,160a24,24,0,0,1,36-36"/><path d="M156,72a24,24,0,0,1,36,36l-28,28a24,24,0,0,1-36-36"/>
+            </svg>
+          </div>
+          <p class="mono">Step 3</p>
+          <h3>Integration</h3>
+          <p>We connect FrontDesk AI to Sheets, standard APIs, or your custom API based on your tier.</p>
+        </div>
+        <div class="step">
+          <div class="icon">
+            <svg viewBox="0 0 256 256" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="40,132 96,188 216,68"/>
+            </svg>
+          </div>
+          <p class="mono">Step 4</p>
+          <h3>Go live</h3>
+          <p>Launch with an analytics dashboard, transcript review, and call logging from day one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing">
+    <div class="sec">
+      <div class="sec-head">
+        <p class="eyebrow">Pricing</p>
+        <h2>Cheaper than hiring extra reception staff.</h2>
+        <p>Start with a 7-day pilot. Scale usage only when your AI resolution rate proves ROI.</p>
+      </div>
+      <div class="pricing">
+        <div class="price-card">
+          <p class="mono">Starter</p>
+          <div class="amount">&#8377;9,999<small>/month</small></div>
+          <ul>
+            <li><span class="dot"></span>3 numbers</li>
+            <li><span class="dot"></span>500 hours</li>
+            <li><span class="dot"></span>All Indian languages</li>
+            <li><span class="dot"></span>Basic integrations</li>
+          </ul>
+          <button class="btn btn-secondary btn-full" onclick="document.getElementById('cta').scrollIntoView()">Start pilot</button>
+        </div>
+        <div class="price-card featured">
+          <p class="mono">Professional</p>
+          <div class="amount">&#8377;19,999<small>/month</small></div>
+          <ul>
+            <li><span class="dot"></span>5+ numbers</li>
+            <li><span class="dot"></span>1,000+ hours</li>
+            <li><span class="dot"></span>Full MCP integrations</li>
+            <li><span class="dot"></span>Priority support</li>
+          </ul>
+          <button class="btn btn-secondary btn-full" onclick="document.getElementById('cta').scrollIntoView()">Book a demo</button>
+        </div>
+        <div class="price-card" style="grid-column: 1 / -1; max-width: 26rem; margin: 0 auto;">
+          <p class="mono">Enterprise</p>
+          <div class="amount">&#8377;35k+<small>/month</small></div>
+          <ul>
+            <li><span class="dot"></span>Unlimited numbers</li>
+            <li><span class="dot"></span>Custom minute bundles</li>
+            <li><span class="dot"></span>Proprietary integrations</li>
+            <li><span class="dot"></span>White-label option</li>
+            <li><span class="dot"></span>SLA and dedicated support</li>
+          </ul>
+          <button class="btn btn-secondary btn-full" onclick="document.getElementById('cta').scrollIntoView()">Contact sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="sec">
+      <div class="cta-panel">
+        <h2>Stop missing calls.<br />Start with one live pilot.</h2>
+        <p>We configure your AI receptionist for your real calls and launch a 7-day pilot with a clear analytics dashboard.</p>
+        <button class="btn btn-secondary btn-lg" onclick="ask('I want to get started. What do I do next?')">Book your free demo</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="foot">
+    <span>&#169; 2026 FrontDesk AI — AI voice receptionist for India</span>
+    <div class="foot-links" style="display:flex; gap:1.5rem;">
+      <a href="#action">Demo</a>
+      <a href="#pricing">Pricing</a>
+      <a href="mailto:hello@frontdesk.ai">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var toast = document.getElementById("toast");
+  var toastTimer = null;
+
+  function showToast(msg, isError) {
+    toast.textContent = msg;
+    toast.classList.toggle("error", !!isError);
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove("show");
+    }, 3800);
+  }
+
+  /* ---------- Sarvam AI TTS ---------- */
+  var SARVAM_URL = "https://api.sarvam.ai/text-to-speech";
+  var sarvamApiKey = localStorage.getItem("sarvam_api_key") || "";
+  var selectedSpeaker = localStorage.getItem("sarvam_speaker") || "shubh";
+  var muted = false;
+
+  var SPEAKERS = [
+    "Shubh","Aditya","Rahul","Rohan","Amit","Dev","Ratan","Varun","Manan",
+    "Sumit","Kabir","Aayan","Ashutosh","Advait","Anand","Tarun","Sunny",
+    "Mani","Gokul","Vijay","Mohit","Rehan","Soham",
+    "Ritu","Priya","Neha","Pooja","Simran","Kavya","Ishita","Shreya",
+    "Roopa","Tanya","Shruti","Suhani","Kavitha","Rupali"
+  ];
+
+  function populateSpeakers() {
+    var select = document.getElementById("speakerSelect");
+    select.innerHTML = "";
+    SPEAKERS.forEach(function (s) {
+      var opt = document.createElement("option");
+      opt.value = s.toLowerCase();
+      opt.textContent = s;
+      select.appendChild(opt);
+    });
+    select.value = selectedSpeaker;
+    document.getElementById("apiKeyInput").value = sarvamApiKey;
+  }
+
+  function setSpeaker(id) {
+    selectedSpeaker = id;
+    try { localStorage.setItem("sarvam_speaker", id); } catch (e) {}
+  }
+
+  function saveApiKey() {
+    sarvamApiKey = document.getElementById("apiKeyInput").value.trim();
+    try { localStorage.setItem("sarvam_api_key", sarvamApiKey); } catch (e) {}
+    showToast(sarvamApiKey ? "Sarvam API key saved. Replies will use Sarvam AI voices." : "API key removed. The agent will stay silent.");
+  }
+
+  function clearApiKey() {
+    sarvamApiKey = "";
+    document.getElementById("apiKeyInput").value = "";
+    try { localStorage.removeItem("sarvam_api_key"); } catch (e) {}
+    showToast("API key removed. The agent will stay silent.");
+  }
+
+  var audioCtx = null;
+  var currentSource = null;
+
+  function ensureAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function playBase64Wav(b64, onend) {
+    var ctx = ensureAudioCtx();
+    var binary = atob(b64);
+    var arr = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+    ctx.decodeAudioData(arr.buffer, function (buffer) {
+      var source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      currentSource = source;
+      source.onended = function () { if (onend) onend(); };
+      source.start();
+    }, function () { if (onend) onend(); });
+  }
+
+  function speakSarvam(text) {
+    setSpeaking(true);
+    fetch(SARVAM_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-subscription-key": sarvamApiKey
+      },
+      body: JSON.stringify({
+        text: text,
+        language_code: "en-IN",
+        model: "bulbul:v3",
+        speaker: selectedSpeaker,
+        pace: 1.0,
+        speech_sample_rate: 24000
+      })
+    }).then(function (r) {
+      if (!r.ok) {
+        return r.json().catch(function () { return {}; }).then(function (b) {
+          throw new Error(b.error && b.error.message ? b.error.message : "HTTP " + r.status);
+        });
+      }
+      return r.json();
+    }).then(function (data) {
+      var combined = (data.audios || []).join("");
+      if (combined) {
+        playBase64Wav(combined, function () { setSpeaking(false); });
+      } else {
+        setSpeaking(false);
+      }
+    }).catch(function (err) {
+      setSpeaking(false);
+      showToast("Sarvam TTS failed: " + err.message + ". Check your API key and try again.", true);
+    });
+  }
+
+  function speak(text) {
+    if (muted) return;
+    stopSpeaking();
+    if (!sarvamApiKey) {
+      showToast("Add your Sarvam API key to hear the agent reply in an Indian AI voice.", true);
+      document.getElementById("apiKeyInput").focus();
+      return;
+    }
+    speakSarvam(text);
+  }
+
+  function stopSpeaking() {
+    if (currentSource) { try { currentSource.stop(); } catch (e) {} currentSource = null; }
+    setSpeaking(false);
+  }
+
+  function toggleMute() {
+    muted = !muted;
+    var btn = document.getElementById("muteBtn");
+    btn.textContent = muted ? "Unmute" : "Mute speaker";
+    if (muted) stopSpeaking();
+    showToast(muted ? "Speaker muted" : "Speaker on");
+  }
+
+  function setSpeaking(on) {
+    var orb = document.getElementById("orb");
+    orb.classList.toggle("speaking", on);
+    var status = document.getElementById("status");
+    if (on) status.innerHTML = "<b>FrontDesk AI</b> is speaking\u2026";
+  }
+
+  /* ---------- Chat log ---------- */
+  var chatbox = document.getElementById("chatbox");
+
+  function appendChat(who, text) {
+    chatbox.innerHTML += '<div class="' + who + '"><b>' + (who === "you" ? "You: " : "FrontDesk AI: ") + '</b>' + escapeHtml(text) + "</div>";
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  /* ---------- Conversation logic ---------- */
+  var KB = {
+    hours: ["hours", "open", "open today", "close", "when are you open", "schedule"],
+    appointment: ["appointment", "book", "booking", "reserve", "schedule a", "meet", "see the doctor"],
+    price: ["price", "pricing", "cost", "how much", "plan", "per month", "monthly", "free trial", "trial"],
+    lang: ["language", "spanish", "french", "english", "multilingual", "languages"],
+    greet: ["hello", "hi ", "hey", "good morning", "good afternoon", "good evening", "start", "get started"],
+    help: ["help", "who are you", "what can you", "demo", "test", "say something", "call"]
+  };
+
+  function answer(text) {
+    var t = text.toLowerCase();
+
+    if (KB.hours.some(function (k) { return t.indexOf(k) !== -1; })) {
+      return "We're open Monday to Friday, eight a.m. to six p.m., and Saturdays from nine to one. After hours, I answer every call and take a message or book an appointment.";
+    }
+    if (KB.appointment.some(function (k) { return t.indexOf(k) !== -1; })) {
+      return "Booking is easy. Just tell me your preferred day and time, and I'll check the calendar, grab a slot, and confirm it right here by voice. What day works best for you?";
+    }
+    if (KB.price.some(function (k) { return t.indexOf(k) !== -1; })) {
+      return "Plans start at nine thousand nine hundred ninety nine rupees a month, and the Professional plan is nineteen thousand nine hundred ninety nine. That's less than the cost of a single missed customer.";
+    }
+    if (KB.lang.some(function (k) { return t.indexOf(k) !== -1; })) {
+      return "Absolutely. I automatically detect the caller's language and reply in all major Indian languages. In this demo I'm speaking English, but the real assistant switches fluently.";
+    }
+    if (KB.greet.some(function (k) { return t.indexOf(k) !== -1; })) {
+      return "Hello! I'm FrontDesk AI, your voice front desk. I can share our hours, book appointments, answer questions, and take messages. What would you like to know?";
+    }
+    if (KB.help.some(function (k) { return t.indexOf(k) !== -1; })) {
+      return "I can answer questions about our business hours, booking appointments, pricing, and languages. Try asking me something out loud, or pick a suggestion below the mic.";
+    }
+    return "Great question. In this demo I know about our hours, appointments, pricing, and languages. For anything else, I'd route you to the right human — but here, try another question or pick a suggestion below.";
+  }
+
+  function ask(question) {
+    stopSpeaking();
+    appendChat("you", question);
+    var reply = answer(question);
+    appendChat("ai", reply);
+    speak(reply);
+  }
+
+  function repeatWelcome() {
+    ask("What can you do?");
+  }
+
+  /* ---------- Speech recognition (STT) ---------- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = null;
+  var listening = false;
+
+  function ensureRecognition() {
+    if (recognition) return true;
+    if (!SR) return false;
+    recognition = new SR();
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = function () {
+      listening = true;
+      document.getElementById("micBtn").classList.add("active");
+      document.getElementById("status").innerHTML = "<b>Listening</b>\u2026 speak now";
+      document.getElementById("orb").classList.add("listening");
+    };
+
+    recognition.onresult = function (e) {
+      var transcript = e.results[0][0].transcript.trim();
+      if (transcript) ask(transcript);
+    };
+
+    recognition.onerror = function (e) {
+      if (e.error === "not-allowed") {
+        showToast("Microphone access was denied. Allow it in your browser settings and try again.", true);
+      } else if (e.error === "no-speech") {
+        showToast("I didn't hear anything. Try again?", true);
+      } else if (e.error !== "aborted") {
+        showToast("Speech error: " + e.error, true);
+      }
+      endListening();
+    };
+
+    recognition.onend = function () { endListening(); };
+    return true;
+  }
+
+  function startListening() {
+    if (!ensureRecognition()) {
+      showToast("Speech input isn't supported in this browser. Use Chrome, Edge, or Safari.", true);
+      return;
+    }
+    stopSpeaking();
+    try {
+      recognition.start();
+    } catch (err) {
+      /* already started */
+    }
+  }
+
+  function endListening() {
+    listening = false;
+    document.getElementById("micBtn").classList.remove("active");
+    document.getElementById("orb").classList.remove("listening");
+    if (document.getElementById("status").innerHTML.indexOf("Listening") !== -1) {
+      document.getElementById("status").innerHTML = "Tap the mic and say something, or pick a suggestion below.";
+    }
+  }
+
+  function toggleListening() {
+    if (listening) {
+      stopSpeaking();
+      if (recognition) recognition.abort();
+      endListening();
+    } else {
+      startListening();
+    }
+  }
+
+  /* ---------- Expose for inline handlers ---------- */
+  window.ask = ask;
+  window.setSpeaker = setSpeaker;
+  window.saveApiKey = saveApiKey;
+  window.clearApiKey = clearApiKey;
+  window.toggleMute = toggleMute;
+  window.toggleListening = toggleListening;
+  window.startListening = startListening;
+  window.repeatWelcome = repeatWelcome;
+
+  populateSpeakers();
+
+  /* Speak the welcome on first interaction hint (Sarvam only) */
+  if (sarvamApiKey) {
+    window.addEventListener("pointerdown", function once() {
+      if (!muted) speak("Hi, I'm FrontDesk AI. Tap the mic and say hello!");
+      window.removeEventListener("pointerdown", once);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
