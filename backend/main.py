@@ -65,7 +65,7 @@ app = FastAPI(title="NORBEAI backend", version="1.0.0")
 origins = [
     origin.strip()
     for origin in os.getenv(
-        "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+        "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,https://voicera-ai-flame.vercel.app"
     ).split(",")
     if origin.strip()
 ]
@@ -422,4 +422,5 @@ async def chat_stream(request: Request) -> StreamingResponse:
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=HOST, port=PORT)
+    uvicorn.run("main:
+", host=HOST, port=PORT)
