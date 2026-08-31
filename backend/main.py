@@ -16,6 +16,7 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
+from starlette.concurrency import run_in_threadpool
 
 import llm
 from engine import SUPPORTED_LANGUAGES, SpeechEngine, TranscribeEngine
@@ -202,16 +203,11 @@ def synthesize(request: SynthesizeRequest) -> Response:
 async def transcribe(file: UploadFile = File(...)) -> dict:
     if not file.filename:
         raise HTTPException(status_code=400, detail="missing audio file")
-    suffix = Path(file.filename).suffix or ".wav"
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        tmp.write(await file.read())
-        tmp_path = tmp.name
     try:
-        text = stt.transcribe(Path(tmp_path))
+        data = await file.read()
+        text = await run_in_threadpool(stt.transcribe, data)
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"transcription failed: {exc}") from exc
-    finally:
-        Path(tmp_path).unlink(missing_ok=True)
     if not text:
         raise HTTPException(status_code=422, detail="no speech detected")
     return {"text": text}
