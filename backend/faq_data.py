@@ -11,12 +11,17 @@ HOSPITAL: list[dict] = [
     {
         "questions": [
             "what are your visiting hours",
+	    "what are your timings",
+	    "what are your opening hours",
+            "what time do you open",
+            "what time do you close",
+            "when are you open",
         ],
-        "answer": "Visiting hours are 10 AM to 8 PM daily. ICU visiting is limited to 11 AM–12 PM and 5 PM–6 PM.",
+        "answer": "We are open 24/7. Visiting hours are 10 AM to 8 PM daily. ICU visiting is limited to 11 AM–12 PM and 5 PM–6 PM.",
         "keywords": [
             "visiting", "hours", "visitor", "visit", "patient", "time",
             "allowed", "evening", "morning", "when", "open", "come",
-            "close", "closing", "close time", "what time",
+            "close", "closing", "close time", "what time","timings","opening hours","open","close",
         ],
         "audio_file": "0.wav",
     },
