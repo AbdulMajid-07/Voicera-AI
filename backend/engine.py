@@ -8,6 +8,7 @@ within a single streaming response — which keeps replies fast on CPU.
 
 from __future__ import annotations
 
+import io
 import os
 import tempfile
 import threading
@@ -168,12 +169,14 @@ class TranscribeEngine:
             )
         return self._model
 
-    def transcribe(self, audio_path: Path) -> str:
+    def transcribe(self, audio_bytes: bytes) -> str:
         with self._lock:
             model = self._load()
             segments, _info = model.transcribe(
-                str(audio_path),
+                io.BytesIO(audio_bytes),
                 beam_size=1,
                 vad_filter=True,
+                language="en",
+                condition_on_previous_text=False,
             )
             return " ".join(segment.text.strip() for segment in segments).strip()
