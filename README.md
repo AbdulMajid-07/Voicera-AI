@@ -1,4 +1,4 @@
-# NORBEAI — AI Front Desk
+# VOICERA — AI Front Desk
 
 > **Voice receptionist widget** — answers every call in a natural cloned voice,
 > books appointments, answers FAQs, and never puts a caller on hold.
